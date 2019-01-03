@@ -1,6 +1,7 @@
 {
     "name": "kematjaya/translation",
     "description": "translation with symfony",
+    "license": "MIT",
     "authors": [
         {
             "name": "Nur Hidayatullah",
