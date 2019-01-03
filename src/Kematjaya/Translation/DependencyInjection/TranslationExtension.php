@@ -6,7 +6,7 @@
  * @author NUR HIDAYAT
  */
 
-namespace Kmj\Translation\DependencyInjection;
+namespace Kematjaya\Translation\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

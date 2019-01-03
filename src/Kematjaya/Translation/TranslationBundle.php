@@ -6,7 +6,7 @@
  * @author NUR HIDAYAT
  */
 
-namespace Kmj\Translation;
+namespace Kematjaya\Translation;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
