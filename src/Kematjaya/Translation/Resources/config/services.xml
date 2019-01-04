@@ -6,9 +6,6 @@
     
     <services>
         <defaults public="false" />
-        <service id="Kematjaya\Translation\EventSubscriber\LocaleSubscriber" class="Kematjaya\Translation\EventSubscriber\LocaleSubscriber">
-            <argument>%kernel.default_locale%</argument>
-        </service>
         
         <service id="Kematjaya\Translation\EventSubscriber\LocaleRewriteListener" class="Kematjaya\Translation\EventSubscriber\LocaleRewriteListener">
             <argument type="service" id="router" />
@@ -16,5 +13,11 @@
             <argument>%locale_supported%</argument>
             <tag name="kernel.event_subscriber"/>
         </service>
+        
+        <service id="Kematjaya\Translation\EventSubscriber\LocaleSubscriber" class="Kematjaya\Translation\EventSubscriber\LocaleSubscriber">
+            <argument>%kernel.default_locale%</argument>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        
     </services>
 </container>
