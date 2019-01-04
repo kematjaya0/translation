@@ -1,6 +1,7 @@
 {
     "name": "kematjaya/translation",
     "description": "translation with symfony",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
@@ -8,9 +9,15 @@
             "email": "kematjaya0@gmail.com"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "symfony/translation": "^4.2",
         "symfony/http-kernel": "^4.2",
         "symfony/dependency-injection": "^4.2"
+    },
+    "autoload": {
+        "psr-0": {
+            "Kematjaya": "src/"
+        }
     }
 }
