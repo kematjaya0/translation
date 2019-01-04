@@ -9,7 +9,7 @@
             "email": "kematjaya0@gmail.com"
         }
     ],
-    "minimum-stability": "1.0",
+    "minimum-stability": "beta",
     "require": {
         "php": "^7.1.3",
         "symfony/translation": "^4.2",
