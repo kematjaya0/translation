@@ -14,7 +14,7 @@
             <argument type="service" id="router" />
             <argument>%kernel.default_locale%</argument>
             <argument>%locale_supported%</argument>
-            <tag name="kernel.event_subscriber/>
+            <tag name="kernel.event_subscriber"/>
         </service>
     </services>
 </container>

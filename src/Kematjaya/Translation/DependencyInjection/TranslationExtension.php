@@ -20,11 +20,11 @@ class TranslationExtension extends Extension{
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
         
-        $container->setParameter('pti.config', $config);
+        $container->setParameter('kematjaya.translation', $config);
         
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
-        
+       
         //$api = $container->getDefinition('Pti\Security\Api\UserProvider');
        // $api->replaceArgument(0, $config['pti_auth']);
         //dump($config);exit;
