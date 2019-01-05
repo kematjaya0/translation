@@ -21,7 +21,13 @@
         "symfony/event-dispatcher": "^4.2",
         "symfony/http-foundation": "^4.2",
         "symfony/routing": "^4.2",
-        "symfony/templating": "*"
+        "symfony/templating": "*",
+        "symfony/form": "4.2.*",
+        "lexik/form-filter-bundle": "^5.0",
+        "symfony/yaml": "4.2.*",
+        "nahid/jsonq": "^5.2",
+        "white-october/pagerfanta-bundle": "^1.2",
+        "symfony/options-resolver": "^4.2"
     },
     "autoload": {
         "psr-0": {
