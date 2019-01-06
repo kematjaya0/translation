@@ -4,8 +4,12 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="kematjaya_language_index" path="/language" methods="GET">
+    <route id="kematjaya_language_index" path="/language" methods="GET POST">
         <default key="_controller">Kematjaya\Translation\Controller\LanguageController:index</default>
+    </route>
+    
+    <route id="kematjaya_language_create" path="/language/create" methods="GET POST">
+        <default key="_controller">Kematjaya\Translation\Controller\LanguageController:create</default>
     </route>
 
 </routes>

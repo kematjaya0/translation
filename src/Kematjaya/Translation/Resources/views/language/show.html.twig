@@ -1,0 +1,65 @@
+{% extends 'backend/base.html.twig' %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block body %}
+    <div class="page-title">
+        <h3 class="breadcrumb-header">{{title}}</h3>
+    </div>
+    <div id="main-wrapper">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="panel panel-white">
+                    <div class="panel-heading clearfix">
+                        <a href="{{path('ms_user_index')}}" class="btn btn-primary btn-sm pull-right"><span class="fa fa-list"></span> {{ 'back'|trans }}</a>
+                        <h4 class="panel-title">{{ 'detail'|trans }} {{title}}</h4>
+                        
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-responsive invoice-table">
+                            
+                            <table class="table table-hover">
+                                <tbody>
+                                    <tr>
+                                        <th width="30%">{{'name'|trans}}</th>
+                                        <td>{{ ms_user.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{'images'|trans}}</th>
+                                        <td><img src="{{ asset(uploads_directory ~ ms_user.images) | imagine_filter('my_thumbnails') }}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{'username'|trans}}</th>
+                                        <td>{{ ms_user.getKmjUser().username }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{'email'|trans}}</th>
+                                        <td>{{ ms_user.getKmjUser().email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{'last_login'|trans}}</th>
+                                        <td>{{ ms_user.getKmjUser().lastLogin|date('d M Y H:i:s') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{'group'|trans}}</th>
+                                        <td>
+                                            <ul>
+                                            {% for group in ms_user.getKmjGroup() %}
+                                                <li>{{group.name}}</li>
+                                            {% endfor %}
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            {{ link_to('ms_user_edit', {'id': ms_user.id}, {title: 'edit'|trans, class: 'btn btn-sm btn-info', icon: 'fa fa-edit'}) }}
+                            <a href="{{ path('ms_user_index') }}" class="btn btn-primary btn-sm"><i class="fa fa-list"></i> {{'back'|trans}}</a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

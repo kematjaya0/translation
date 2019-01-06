@@ -10,7 +10,6 @@ namespace Kematjaya\Translation\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Kematjaya\Translation\Form\KmjLanguageType;
@@ -19,25 +18,33 @@ use Symfony\Component\Form\Form;
 use Nahid\JsonQ\Jsonq;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Adapter\ArrayAdapter;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Translation\Loader\YamlFileLoader;
 
 
 class LanguageController extends AbstractController{
     
     private $limit = 10;
     
-    private $session;
-    
-    public function __construct(SessionInterface $session) {
-        $this->session = $session;
+    private function getTranslationSetting(Request $request)
+    {
+        $kernel = $this->container->get('kernel');
+        $transConfig = $kernel->getProjectDir(). '/config/packages/translation.yaml';
+        $loader = new YamlFileLoader();
+        $resource = $loader->load($transConfig, $request->getSession()->get('_locale'));
+        return $resource;
     }
     
-    
-    private function getTranslatorData(KernelInterface $kernel) {
+    private function getTranslatorData($resource) {
+        $kernel = $this->container->get('kernel');
+        $transPath = str_replace('%kernel.project_dir%', $kernel->getProjectDir(), $resource->get('framework.translator.default_path'));
+        
         try{
             $sources = array();
             $data = array();
-            foreach($this->getParameter('locale_supported') as $v) {
-                $filename = $kernel->getRootDir().'/Resources/translations/messages.'.$v.'.yml';
+            
+            foreach($this->container->getParameter('locale_supported') as $v) {
+                $filename = $transPath.'/messages.'.$v.'.yml';
                 if(!file_exists($filename)) {
                     $handle  = fopen($filename, 'w');
                     $yaml = (isset($sources[$v])) ? Yaml::dump($sources[$v]) : Yaml::dump(array());
@@ -62,18 +69,20 @@ class LanguageController extends AbstractController{
     
     public function setFilters($filters = array(), $name)
     {
-        $this->session->set($name, $filters);
+        $this->container->get('session')->set($name, $filters);
     }
     
     public function getFilters($name)
     {
-        return $this->session->get($name, []);
+        return $this->container->get('session')->get($name, []);
     }
     
-    public function index(Request $request, KernelInterface $kernel)
+    public function index(Request $request)
     {
-        $data = $this->getTranslatorData($kernel);
+        $resource = $this->getTranslationSetting($request);
         
+        $data = $this->getTranslatorData($resource);
+        //dump($data);exit;
         if($request->get('_reset')) {
             $this->setFilters(null, KmjLanguageFilterType::class);
         }
@@ -104,7 +113,7 @@ class LanguageController extends AbstractController{
             $res = $jsonq->from('translate');
             
             if(isset($filters['translated']) && strlen($filters['translated']) > 0) {
-                foreach($this->getParameter('locale_supported') as $v){
+                foreach($this->container->getParameter('locale_supported') as $v){
                     $res = $res->orWhere($v, 'contains', $filters['translated']);
                 }
                 
@@ -122,5 +131,119 @@ class LanguageController extends AbstractController{
         return $this->render('@Translation/language/index.html.twig', array(
             'title' => 'Language', 'pagers' => $paginator, 'data' => $data, 'filter' => $form->createView()
         ));
+    }
+    
+    function create(Request $request)
+    {
+        $form = $this->createForm(KmjLanguageType::class);
+        
+        if ($this->processForm($form, $request, array())) {
+            return $this->redirectToRoute('kematjaya_language_index');
+        }
+        
+        return $this->render('backend/ms_language/create.html.twig', 
+            [
+                'title' => 'Language', 
+                'form' => $form->createView()
+            ]);
+    }
+    
+    private function processForm(Form $form, Request $request, $data = array())
+    {
+        $kernel = $this->container->get('kernel');
+        $form->handleRequest($request);
+        if ($form->isSubmitted())
+        {
+            $edit = (!empty($data)) ? true : false;
+            $formData = $request->get($form->getName());
+            $transData = $this->getTranslatorData($kernel);
+            
+            if(!$edit) {
+                if(isset($transData[$formData['key']])) {
+                    $this->addFlash('error', 'key "'.$formData['key'].'" already exist');
+                    return false;
+                }
+            }
+            
+            if($form->isValid())
+            {
+                $type = ($edit) ? "update" : "add";
+                $sources = array();
+                
+                try{
+                    foreach($this->getParameter('locale_supported') as $v) {
+                        $filename = $kernel->getRootDir().'/Resources/translations/messages.'.$v.'.yml';
+                        if(!file_exists($filename)) {
+                            $handle  = fopen($filename, 'w');
+                            $yaml = Yaml::dump($sources);
+                            fwrite($handle, $yaml);
+                        }
+                        $sources = Yaml::parseFile($filename);
+                        $sources[$formData['key']] = $formData[$v];
+
+                        $yaml = Yaml::dump($sources);
+
+                        file_put_contents($filename, $yaml);
+                    }
+
+                    $this->addFlash('success', $this->getTranslator()->trans('messages.'.$type.'.success'));
+                    return true;
+                } catch (Exception $ex) {
+                    $this->addFlash('error', $this->getTranslator()->trans('messages.'.$type.'.error') . ' : ' . $ex->getMessages());
+                }
+            }
+            
+        }
+        
+        return false;
+    }
+    
+    public function edit(Request $request, $id, KernelInterface $kernel)
+    {
+        $transData = $this->getTranslatorData($kernel);
+        $data = (isset($transData[$id])) ? $transData[$id] : array();
+        $data['key'] = $id;
+        $form = $this->createForm(MsLanguageType::class, $data);
+        
+        if ($this->processForm($kernel, $form, $request, $data)) {
+            return $this->redirectToRoute('ms_language_index');
+        }
+        
+        return $this->render('backend/ms_language/edit.html.twig', 
+            [
+                'title' => 'Language', 
+                'id' => $id,
+                'form' => $form->createView()
+            ]);
+    }
+    
+    
+    public function delete(Request $request, $id, KernelInterface $kernel)
+    {
+        if ($this->isCsrfTokenValid('delete'.$id, $request->request->get('_token')))
+        {
+            try{
+                foreach($this->getParameter('locale_supported') as $v) {
+                    $sources = Yaml::parseFile($kernel->getRootDir().'/Resources/translations/messages.'.$v.'.yml');
+                    
+                    if(isset($sources[$id])) {
+                        unset($sources[$id]);
+                    }
+                    
+                    $yaml = Yaml::dump($sources);
+
+                    file_put_contents($kernel->getRootDir().'/Resources/translations/messages.'.$v.'.yml', $yaml);
+                }
+
+                $this->addFlash('success', $this->getTranslator()->trans('messages.deleted.success'));
+            } catch (Exception $ex) {
+                $this->addFlash('error', $this->getTranslator()->trans('messages.deleted.error') . ' : ' . $ex->getMessages());
+            }
+                
+        }else{
+            $this->addFlash('error', $this->getTranslator()->trans('messages.deleted.error') . ' : token not valid.');
+        }
+         
+        return $this->redirectToRoute('ms_language_index');
     }
 }
