@@ -1,6 +1,6 @@
-<form class="form-inline" method="post" action="{# path('ms_language_delete', {'id':id}) #}" onsubmit="return confirm('{{'confirm.delete'|trans}}');">
+<form class="form-inline" method="post" action="{{ path('kematjaya_language_delete', {'id':id}) }}" onsubmit="return confirm('{{'confirm.delete'|trans}}');">
     <input type="hidden" name="_method" value="DELETE">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ id) }}">
-    <a href="" class="btn btn-xs btn-primary"><span class="fa fa-edit"></span> {{'edit'|trans}}</a>
+    <input type="hidden" name="_token" value="{{ csrf_token('kematjaya_delete' ~ id) }}">
+    <a href="{{path('kematjaya_language_edit', {id: id})}}" class="btn btn-xs btn-primary"><span class="fa fa-edit"></span> {{'edit'|trans}}</a>
     <button class="btn btn-xs btn-danger" type="submit"><span class="fa fa-trash"></span> {{'delete'|trans}}</button>
 </form>

@@ -11,5 +11,17 @@
     <route id="kematjaya_language_create" path="/language/create" methods="GET POST">
         <default key="_controller">Kematjaya\Translation\Controller\LanguageController:create</default>
     </route>
+    
+    <route id="kematjaya_language_edit" path="/language/edit/{id}" methods="GET POST">
+        <default key="_controller">Kematjaya\Translation\Controller\LanguageController:edit</default>
+    </route>
+    
+    <route id="kematjaya_language_delete" path="/language/delete/{id}" methods="POST DELETE">
+        <default key="_controller">Kematjaya\Translation\Controller\LanguageController:delete</default>
+    </route>
 
+    <route id="kematjaya_language_change" path="/language/change/{locale}" methods="GET">
+        <default key="_controller">Kematjaya\Translation\Controller\LanguageController:change</default>
+    </route>
+    
 </routes>
