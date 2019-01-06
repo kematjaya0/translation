@@ -19,7 +19,7 @@
             <tag name="kernel.event_subscriber"/>
         </service>
         
-        <service id="Kematjaya\Translation\Form\KmjLanguageType" class="Kematjaya\Translation\Form\KmjLanguageType">
+        <service id="kematjaya.form.language.type" class="Kematjaya\Translation\Form\KmjLanguageType">
             <argument type="service" id="service_container" />
         </service>
         
