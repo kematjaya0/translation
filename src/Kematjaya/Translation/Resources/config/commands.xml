@@ -6,6 +6,7 @@
 
     <services>
         <service id="kematjaya.translation.configure" class="Kematjaya\Translation\Command\TranslationCommand">
+            <argument type="service" id="service_container" />
             <tag name="console.command" command="kematjaya:translation:configure" />
         </service>
     </services>
