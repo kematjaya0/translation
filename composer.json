@@ -27,7 +27,20 @@
         "symfony/yaml": "4.2.*",
         "nahid/jsonq": "^5.2",
         "white-october/pagerfanta-bundle": "^1.2",
-        "symfony/options-resolver": "^4.2"
+        "symfony/options-resolver": "^4.2",
+        "symfony/console": "^4.2"
+    },
+    "scripts": {
+        "auto-scripts": {
+            "kematjaya:translation:configure": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+        },
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ]
     },
     "autoload": {
         "psr-0": {
