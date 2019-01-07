@@ -24,6 +24,7 @@ class TranslationExtension extends Extension{
         
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+        $loader->load('commands.xml');
         //$loader->load('all.xml');
        
         //$api = $container->getDefinition('Pti\Security\Api\UserProvider');
