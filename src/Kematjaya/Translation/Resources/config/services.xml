@@ -10,7 +10,7 @@
         <service id="Kematjaya\Translation\EventSubscriber\LocaleRewriteListener" class="Kematjaya\Translation\EventSubscriber\LocaleRewriteListener">
             <argument type="service" id="router" />
             <argument>%kernel.default_locale%</argument>
-            <argument>%locale_supported%</argument>
+            <argument type="service" id="service_container" />
             <tag name="kernel.event_subscriber"/>
         </service>
         

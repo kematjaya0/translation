@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class LocaleRewriteListener implements EventSubscriberInterface{
     
@@ -20,7 +21,11 @@ class LocaleRewriteListener implements EventSubscriberInterface{
      * @var Symfony\Component\Routing\RouterInterface
      */
     private $router;
-
+    
+    /**
+     * @var Symfony\Component\DependencyInjection\ContainerInterface;
+     */
+    private $container;
     /**
     * @var routeCollection \Symfony\Component\Routing\RouteCollection
     */
@@ -41,12 +46,13 @@ class LocaleRewriteListener implements EventSubscriberInterface{
      */
     private $localeRouteParam;
 
-    public function __construct(RouterInterface $router, $defaultLocale = 'en', array $supportedLocales = array(), $localeRouteParam = '_locale')
+    public function __construct(RouterInterface $router, $defaultLocale = 'en', ContainerInterface $container, $localeRouteParam = '_locale')
     {
         $this->router = $router;
         $this->routeCollection = $router->getRouteCollection();
+        $this->container = $container;
         $this->defaultLocale = $defaultLocale;
-        $this->supportedLocales = $supportedLocales;
+        $this->supportedLocales = ($this->container->hasParameter('locale_supported')) ? $this->container->getParameter('locale_supported'): array($this->container->getParameter('locale'));
         $this->localeRouteParam = $localeRouteParam;
     }
     
@@ -60,8 +66,7 @@ class LocaleRewriteListener implements EventSubscriberInterface{
         $request = $event->getRequest(); // mengambil object Request
         $path = $request->getPathInfo(); // mengambil path / url dari request
 
-        $route_exists = false; //by default assume route does not exist.
-        
+        $route_exists = false;
         // check dari routing yang tersedia, apakah url ada atau tidak
         foreach($this->routeCollection as $routeObject){
             $routePath = $routeObject->getPath();
@@ -74,17 +79,16 @@ class LocaleRewriteListener implements EventSubscriberInterface{
         // jika path routing ada
         if($route_exists == true){
             $locale = $request->getPreferredLanguage(); // ambil bahasa 
-
+            
             if($locale==""  || $this->isLocaleSupported($locale)==false){
                 $locale = $request->getDefaultLocale();
             }
             
-            // set url dengan disertai bahasa
             $event->setResponse(new RedirectResponse($request->getSchemeAndHttpHost().$request->getBaseUrl()."/".$locale.$path));
         }
     }
     
-    public static function getSubscribedEvents() // override function untuk setting prioritas class yang dijalankan terlebih dahulu
+    public static function getSubscribedEvents() 
     {
         return array(
             KernelEvents::REQUEST => array(array('onKernelRequest', 19)),

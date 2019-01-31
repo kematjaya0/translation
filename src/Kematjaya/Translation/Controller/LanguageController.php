@@ -10,11 +10,9 @@ namespace Kematjaya\Translation\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Kematjaya\Translation\Form\KmjLanguageType;
 use Kematjaya\Translation\Filter\KmjLanguageFilterType;
 use Symfony\Component\Form\Form;
@@ -130,7 +128,7 @@ class LanguageController extends AbstractController{
         $paginator->setCurrentPage($request->query->get('page', 1));
         
         return $this->render('@Translation/language/index.html.twig', array(
-            'title' => 'Language', 'pagers' => $paginator, 'data' => $data, 'filter' => $form->createView()
+            'title' => $this->container->get('translator')->trans('language'), 'pagers' => $paginator, 'data' => $data, 'filter' => $form->createView()
         ));
     }
     
@@ -144,7 +142,7 @@ class LanguageController extends AbstractController{
         
         return $this->render('@Translation/language/create.html.twig', 
             [
-                'title' => 'Language', 
+                'title' => $this->container->get('translator')->trans('language'), 
                 'form' => $form->createView()
             ]);
     }
@@ -218,7 +216,7 @@ class LanguageController extends AbstractController{
         
         return $this->render('@Translation/language/edit.html.twig', 
             [
-                'title' => 'Language', 
+                'title' => $this->container->get('translator')->trans('language'), 
                 'id' => $id,
                 'form' => $form->createView()
             ]);
